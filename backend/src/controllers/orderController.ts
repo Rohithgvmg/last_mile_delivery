@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import { createOrder } from "../services/orderService";
+import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 export async function createOrderController(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ) {
   try {
-    const order = await createOrder(req.body);
+    const userId=req.user!.userId;
+    const order = await createOrder({...req.body,userId});
 
     return res.status(201).json(order);
   } catch (error) {
@@ -17,4 +19,5 @@ export async function createOrderController(
     });
   }
 }
+
 
