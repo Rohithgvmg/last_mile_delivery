@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,19 +7,157 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role{
+enum Role {
   CUSTOMER
   AGENT
-  ADMIN 
+  ADMIN
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String 
-  email String @unique
-  password String 
-  role Role @default(CUSTOMER)
-  createdAt DateTime @default(now()) 
+enum OrderType {
+  B2B
+  B2C
+}
+
+enum ZoneType {
+  INTRA
+  INTER
+}
+
+enum PaymentType {
+  PREPAID
+  COD
+}
+
+enum DeliveryStatus {
+  CREATED
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  agent         Agent?
+  orders        Order[]
+  statusHistory OrderStatusHistory[]
 }
 
+model Agent {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User        @relation(fields: [userId], references: [id])
+  zones  AgentZone[]
+  orders Order[]
+}
+
+model Zone {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  areas  Area[]
+  agents AgentZone[]
+}
+
+model Area {
+  id        Int      @id @default(autoincrement())
+  name      String
+  zoneId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  zone         Zone    @relation(fields: [zoneId], references: [id])
+  pickupOrders Order[] @relation("PickupArea")
+  dropOrders   Order[] @relation("DropArea")
+
+  @@unique([zoneId, name])
+}
+
+model AgentZone {
+  agentId Int
+  zoneId  Int
+
+  agent Agent @relation(fields: [agentId], references: [id])
+  zone  Zone  @relation(fields: [zoneId], references: [id])
+
+  @@id([agentId, zoneId])
+}
+
+model RateCard {
+  id           Int       @id @default(autoincrement())
+  orderType    OrderType
+  zoneType     ZoneType
+  ratePerKg    Decimal
+  codSurcharge Decimal
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([orderType, zoneType])
+}
+
+model Order {
+  id      Int  @id @default(autoincrement())
+  userId  Int
+  agentId Int?
+
+  pickupAreaId Int
+  dropAreaId   Int
+
+  length           Decimal
+  breadth          Decimal
+  height           Decimal
+  actualWeight     Decimal
+  volumetricWeight Decimal
+  chargeableWeight Decimal
+
+  orderType   OrderType
+  paymentType PaymentType
+  status      DeliveryStatus @default(CREATED)
+
+  ratePerKg    Decimal
+  baseCharge   Decimal
+  codSurcharge Decimal
+  totalCharge  Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User                 @relation(fields: [userId], references: [id])
+  agent         Agent?               @relation(fields: [agentId], references: [id])
+  pickupArea    Area                 @relation("PickupArea", fields: [pickupAreaId], references: [id])
+  dropArea      Area                 @relation("DropArea", fields: [dropAreaId], references: [id])
+  statusHistory OrderStatusHistory[]
+
+  @@index([userId])
+  @@index([agentId])
+  @@index([pickupAreaId])
+  @@index([dropAreaId])
+  @@index([status])
+}
+
+model OrderStatusHistory {
+  id        Int            @id @default(autoincrement())
+  orderId   Int
+  status    DeliveryStatus
+  actorId   Int
+  timestamp DateTime       @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+  actor User  @relation(fields: [actorId], references: [id])
+
+  @@index([orderId])
+  @@index([actorId])
+}
