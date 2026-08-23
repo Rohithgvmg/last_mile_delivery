@@ -1,0 +1,8 @@
+Authentication:
+Implementing role based Authentication
+1. Customer
+2. Agent
+3. Admin 
+
+Each having their own API's
+

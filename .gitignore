@@ -18,3 +18,10 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+
+# Local AI/editor tooling
+.agents/
+.claude/
+.windsurf/
+skills-lock.json 
