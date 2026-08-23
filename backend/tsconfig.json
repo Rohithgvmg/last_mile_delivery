@@ -11,6 +11,12 @@
     "strict": true,
     "skipLibCheck": true,
 
-    "verbatimModuleSyntax": false
-  }
+    "verbatimModuleSyntax": false,
+    "types": ["node"]
+  },
+    "exclude": [
+    "prisma.config.ts",
+    "prisma",
+    "node_modules"
+  ]
 }
