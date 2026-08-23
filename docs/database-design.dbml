@@ -1,0 +1,134 @@
+Enum Role {
+  CUSTOMER
+  AGENT
+  ADMIN
+}
+
+Enum OrderType {
+  B2B
+  B2C
+}
+
+Enum ZoneType {
+  INTRA
+  INTER
+}
+
+Enum PaymentType {
+  PREPAID
+  COD
+}
+
+Enum DeliveryStatus {
+  CREATED
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+}
+
+
+Table User {
+  id int [pk, increment]
+  name varchar
+  email varchar [unique]
+  password varchar
+  role Role
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+
+Table Agent {
+  id int [pk, increment]
+  userId int [unique, ref: - User.id]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+
+Table Zone {
+  id int [pk, increment]
+  name varchar [unique]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+
+Table Area {
+  id int [pk, increment]
+  name varchar
+  zoneId int [ref: > Zone.id]
+  createdAt timestamp
+  updatedAt timestamp
+
+  indexes {
+    (zoneId, name) [unique]
+  }
+}
+
+
+Table AgentZone {
+  agentId int [ref: > Agent.id]
+  zoneId int [ref: > Zone.id]
+
+  indexes {
+    (agentId, zoneId) [pk]
+  }
+}
+
+
+Table RateCard {
+  id int [pk, increment]
+  orderType OrderType
+  zoneType ZoneType
+  ratePerKg decimal
+  codSurcharge decimal
+  createdAt timestamp
+  updatedAt timestamp
+
+  indexes {
+    (orderType, zoneType) [unique]
+  }
+}
+
+
+Table Order {
+  id int [pk, increment]
+
+  userId int [ref: > User.id]
+  agentId int [ref: > Agent.id, null]
+
+  pickupAreaId int [ref: > Area.id]
+  dropAreaId int [ref: > Area.id]
+
+  length decimal
+  breadth decimal
+  height decimal
+  actualWeight decimal
+  volumetricWeight decimal
+  chargeableWeight decimal
+
+  orderType OrderType
+  paymentType PaymentType
+  status DeliveryStatus
+
+  ratePerKg decimal
+  baseCharge decimal
+  codSurcharge decimal
+  totalCharge decimal
+
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+
+Table OrderStatusHistory {
+  id int [pk, increment]
+
+  orderId int [ref: > Order.id]
+  status DeliveryStatus
+  actorId int [ref: > User.id]
+  timestamp timestamp
+}
