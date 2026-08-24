@@ -19,9 +19,7 @@ export default function RegisterPage({
 
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(
-    event: React.FormEvent
-  ) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     try {
@@ -50,64 +48,100 @@ export default function RegisterPage({
   }
 
   return (
-    <div>
-      <h1>Create Account</h1>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name</label>
+        <div className="auth-header">
+          <div className="auth-logo">
+            Last Mile Delivery
+          </div>
 
-          <input
-            value={name}
-            onChange={(event) =>
-              setName(event.target.value)
-            }
-            required
-          />
+          <h1>Create your account</h1>
+
+          <p>
+            Start managing your deliveries today
+          </p>
         </div>
 
-        <div>
-          <label>Email</label>
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="form-group">
+            <label>Name</label>
 
-          <input
-            type="email"
-            value={email}
-            onChange={(event) =>
-              setEmail(event.target.value)
-            }
-            required
-          />
+            <input
+              placeholder="Enter your name"
+              value={name}
+              onChange={(event) =>
+                setName(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Email</label>
+
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+
+            <input
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="auth-error">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="auth-success">
+              {success}
+            </div>
+          )}
+
+          <button
+            className="auth-button"
+            disabled={loading}
+          >
+            {loading
+              ? "Creating account..."
+              : "Create Account"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          <span>Already have an account?</span>
+
+          <button
+            className="auth-link"
+            onClick={onLogin}
+          >
+            Login
+          </button>
         </div>
 
-        <div>
-          <label>Password</label>
-
-          <input
-            type="password"
-            value={password}
-            onChange={(event) =>
-              setPassword(event.target.value)
-            }
-            required
-          />
-        </div>
-
-        {error && <p>{error}</p>}
-        {success && <p>{success}</p>}
-
-        <button disabled={loading}>
-          {loading
-            ? "Creating account..."
-            : "Register"}
-        </button>
-      </form>
-
-      <p>
-        Already have an account?
-        <button onClick={onLogin}>
-          Login
-        </button>
-      </p>
+      </div>
     </div>
   );
 }

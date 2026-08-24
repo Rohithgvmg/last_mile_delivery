@@ -2,16 +2,16 @@ import { useState } from "react";
 
 import { useAuth } from "./context/AuthContext";
 
+import OrderForm from "./components/OrderForm";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import OrderForm from "./components/OrderForm";
 
-function App() {
+export default function App() {
   const { user, logout } = useAuth();
 
-  const [showRegister, setShowRegister] =
-    useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
+  // Not logged in
   if (!user) {
     if (showRegister) {
       return (
@@ -28,29 +28,45 @@ function App() {
     );
   }
 
+  // Logged in
   return (
-    <div>
-      <header>
-        <h2>Last Mile Delivery</h2>
+    <div className="app">
 
-        <p>
-          Welcome, {user.name}
-        </p>
+      <nav className="navbar">
 
-        <p>
-          Role: {user.role}
-        </p>
+        <div className="logo">
+          Last Mile Delivery
+        </div>
 
-        <button onClick={logout}>
-          Logout
-        </button>
-      </header>
+        <div className="nav-user">
 
-      <hr />
+          <div className="user-info">
 
-      <OrderForm />
+            <div className="user-name">
+              Welcome, {user.name}
+            </div>
+
+            <div className="user-role">
+              Role: {user.role}
+            </div>
+
+          </div>
+
+          <button
+            className="logout-button"
+            onClick={logout}
+          >
+            Logout
+          </button>
+
+        </div>
+
+      </nav>
+   
+      <main>
+        <OrderForm />
+      </main>
+
     </div>
   );
 }
-
-export default App;

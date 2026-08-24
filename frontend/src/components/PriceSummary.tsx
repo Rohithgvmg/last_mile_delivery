@@ -7,39 +7,76 @@ interface PriceSummaryProps {
 export default function PriceSummary({
   pricing,
 }: PriceSummaryProps) {
+
   if (!pricing) {
-    return null;
+    return (
+      <div className="summary-card">
+        <h2 className="section-title">
+          Price Summary
+        </h2>
+
+        <p className="section-description">
+          Calculate the price to see your delivery estimate.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2>Price Summary</h2>
+    <div className="summary-card">
 
-      <p>Zone: {pricing.zoneType}</p>
+      <h2 className="section-title">
+        Price Summary
+      </h2>
 
-      <p>
-        Volumetric Weight: {pricing.volumetricWeight} kg
-      </p>
+      <div className="price-row">
+        <span>Delivery Zone</span>
+        <strong>{pricing.zoneType}</strong>
+      </div>
 
-      <p>
-        Chargeable Weight: {pricing.chargeableWeight} kg
-      </p>
+      <div className="price-row">
+        <span>Volumetric Weight</span>
+        <strong>
+          {pricing.volumetricWeight} kg
+        </strong>
+      </div>
 
-      <p>
-        Rate: ₹{pricing.ratePerKg}/kg
-      </p>
+      <div className="price-row">
+        <span>Chargeable Weight</span>
+        <strong>
+          {pricing.chargeableWeight} kg
+        </strong>
+      </div>
 
-      <p>
-        Base Charge: ₹{pricing.baseCharge}
-      </p>
+      <div className="price-row">
+        <span>Rate</span>
+        <strong>
+          ₹{pricing.ratePerKg}/kg
+        </strong>
+      </div>
 
-      <p>
-        COD Surcharge: ₹{pricing.codSurcharge}
-      </p>
+      <div className="price-row">
+        <span>Base Charge</span>
+        <strong>
+          ₹{pricing.baseCharge}
+        </strong>
+      </div>
 
-      <hr />
+      <div className="price-row">
+        <span>COD Surcharge</span>
+        <strong>
+          ₹{pricing.codSurcharge}
+        </strong>
+      </div>
 
-      <h3>Total: ₹{pricing.totalCharge}</h3>
+      <div className="price-total">
+        <span>Total</span>
+
+        <span>
+          ₹{pricing.totalCharge}
+        </span>
+      </div>
+
     </div>
   );
 }

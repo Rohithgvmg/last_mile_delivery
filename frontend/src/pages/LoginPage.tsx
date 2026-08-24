@@ -16,9 +16,7 @@ export default function LoginPage({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(
-    event: React.FormEvent
-  ) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     try {
@@ -38,49 +36,79 @@ export default function LoginPage({
   }
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="auth-page">
+      <div className="auth-card">
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email</label>
+        <div className="auth-header">
+          <div className="auth-logo">
+            Last Mile Delivery
+          </div>
 
-          <input
-            type="email"
-            value={email}
-            onChange={(event) =>
-              setEmail(event.target.value)
-            }
-            required
-          />
+          <h1>Welcome back</h1>
+
+          <p>
+            Login to manage your deliveries
+          </p>
         </div>
 
-        <div>
-          <label>Password</label>
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="form-group">
+            <label>Email</label>
 
-          <input
-            type="password"
-            value={password}
-            onChange={(event) =>
-              setPassword(event.target.value)
-            }
-            required
-          />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="auth-error">
+              {error}
+            </div>
+          )}
+
+          <button
+            className="auth-button"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          <span>Don't have an account?</span>
+
+          <button
+            className="auth-link"
+            onClick={onRegister}
+          >
+            Create an account
+          </button>
         </div>
 
-        {error && <p>{error}</p>}
-
-        <button disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-
-      <p>
-        Don't have an account?
-        <button onClick={onRegister}>
-          Register
-        </button>
-      </p>
+      </div>
     </div>
   );
 }
