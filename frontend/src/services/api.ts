@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://last-mile-delivery-063b.onrender.com/api";
+const API_BASE_URL =`${import.meta.env.VITE_API_URL}/api`;
 
 export interface StatusHistoryEntry {
   status: string;
