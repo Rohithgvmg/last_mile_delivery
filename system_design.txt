@@ -1,8 +1,73 @@
-Authentication:
-Implementing role based Authentication
-1. Customer
-2. Agent
-3. Admin 
+System Design
 
-Each having their own API's
+The Last Mile Delivery system is designed around four main components: the rate calculation engine, zone detection, automatic agent assignment, and delivery status handling. The backend is implemented using Node.js, Express, TypeScript, Prisma, and PostgreSQL. Customer requests are authenticated using JWT, and order-related information is stored persistently in the database.
 
+1. Rate Calculation Engine
+
+The rate calculation engine is responsible for calculating the delivery charge before an order is confirmed. This allows the customer to see the expected cost and decide whether to proceed with the order.
+
+When the customer enters the package dimensions and weight, the system first calculates the volumetric weight. Volumetric weight represents the space occupied by the package and is calculated using:
+
+Volumetric Weight = (Length × Breadth × Height) / 5000
+
+The dimensions are provided in centimetres and the resulting value is treated as kilograms.
+
+The system then determines the chargeable weight by comparing the actual weight of the package with its volumetric weight:
+
+Chargeable Weight = max(Actual Weight, Volumetric Weight)
+
+This ensures that a large but lightweight package is not charged only according to its physical weight.
+
+Next, the system determines the delivery zone type and selects the appropriate rate card. The rate card depends on both the order type and the zone type. The application supports B2C and B2B orders and distinguishes between INTRA-zone and INTER-zone deliveries.
+
+The base delivery charge is calculated as:
+
+Base Charge = Chargeable Weight × Rate Per Kg
+
+If the customer selects Cash on Delivery (COD), the configured COD surcharge is added. For prepaid orders, the COD surcharge is zero.
+
+Therefore, the final amount is:
+
+Total Charge = Base Charge + COD Surcharge
+
+The pricing logic is exposed through a price-preview endpoint. The customer can calculate and view this amount before confirming the order. When the order is actually created, the backend performs the calculation again rather than relying on a price supplied by the frontend. This keeps the pricing logic under backend control.
+
+2. Zone Detection
+
+Zone detection is based on the predefined relationship between areas and zones in the database. Each delivery area belongs to a particular zone.
+
+For an order, the backend receives both the pickup area and the drop area. It retrieves their corresponding zones and compares their zone IDs.
+
+If both areas belong to the same zone, the delivery is classified as INTRA. If they belong to different zones, it is classified as INTER.
+
+This classification is important because the application can use different rate cards for intra-zone and inter-zone deliveries. The zone type is therefore not manually entered by the customer; it is derived by the backend from the stored area and zone relationships.
+
+3. Automatic Agent Assignment
+
+After an order is successfully created, the system attempts to automatically assign a delivery agent.
+
+The pickup area's zone is used as the starting point for identifying suitable agents. The system considers agents who are associated with the relevant zone and are currently marked as available.
+
+Because several agents may be available in the same zone, the system uses geographical distance to select the most suitable agent. Agents with valid latitude and longitude coordinates are considered, and the distance between the pickup location and each eligible agent is calculated using their geographical coordinates.
+
+The agent with the smallest calculated distance is selected. The selected agent is then associated with the order, and the order status changes from CREATED to ASSIGNED.
+
+The status transition is also recorded in the OrderStatusHistory table. Therefore, the system maintains both the current state of the order and an audit trail of how that state was reached.
+
+If there is no suitable available agent with the required location information, the order can remain unassigned rather than assigning an invalid or unsuitable agent.
+
+4. Failed Delivery Handling
+
+The order lifecycle is represented through explicit statuses such as CREATED, ASSIGNED, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, and FAILED.
+
+Every status change can be stored in the OrderStatusHistory table together with a timestamp. This provides an audit trail instead of keeping only the latest status.
+
+For example, a normal order may progress as:
+
+CREATED → ASSIGNED → PICKED_UP → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED
+
+If delivery cannot be completed, the order can instead reach the FAILED state. Recording FAILED in the status history preserves the fact that an attempted delivery was unsuccessful while retaining the previous status transitions.
+
+The customer-facing Order History page retrieves the customer's orders and displays both the current status and the corresponding status history from newest to oldest. This allows the customer to understand the current state of an order as well as its previous recorded states.
+
+The current implementation deliberately keeps failed-delivery handling simple. It records the FAILED state and maintains the history, but does not implement a separate retry, reassignment, or agent/admin workflow. This keeps the system within the scope of the implemented customer-facing delivery application while maintaining a clear foundation for adding such workflows later.
