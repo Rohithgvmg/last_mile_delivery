@@ -10,132 +10,46 @@ https://last-mile-delivery-1-l609.onrender.com
 **Backend API:**  
 https://last-mile-delivery-063b.onrender.com
 
-The deployed application has been tested end-to-end for:
+## Setup Guide
 
-- User registration
-- User login
-- Delivery price calculation
-- Order creation
-- Automatic agent assignment
-- Order status tracking
-- Order history and status history
+### Backend
 
----
+```bash
+cd backend
+npm install
+npx prisma generate
+npm run build
+npm start
+```
 
-# Features
+Create backend/.env file
+```
+PORT=5000
+DATABASE_URL=<PostgreSQL connection string>
+DIRECT_URL=<PostgreSQL direct connection string>
+JWT_SECRET=<JWT secret>
+```
+The backend runs on http://localhost:5000. (locally)
 
-### Customer Authentication
+### Frontend
+```bash
+cd frontend
+npm install
+```
 
-- User registration with name, email, and password
-- Password hashing using bcrypt
-- JWT-based authentication
-- Protected order and pricing endpoints
-- Customer role is assigned automatically during registration
+Create frontend/.env file
+```
+VITE_API_URL=(backend url link)
+```
 
-### Delivery Price Calculation
+## API Documentation & Rate Calculation
 
-The application calculates delivery charges based on:
+The API provides endpoints for user registration/login (`POST /api/auth/register`, `POST /api/auth/login`), price preview (`POST /api/pricing/preview`), order creation (`POST /api/orders`), and authenticated order history (`GET /api/orders/history`). Protected endpoints require a JWT in the `Authorization: Bearer <token>` header. For pricing, the system first determines the delivery type as `INTRA` when pickup and drop areas belong to the same zone, otherwise `INTER`; it then selects the appropriate rate card using the order type and zone type, calculates volumetric weight as `(length × breadth × height) / 5000`, uses `max(actualWeight, volumetricWeight)` as the chargeable weight, calculates the base charge as `chargeableWeight × ratePerKg`, adds the COD surcharge when applicable, and finally computes `totalCharge = baseCharge + codSurcharge`.
 
-- Pickup area
-- Drop area
-- Delivery zone
-- Package dimensions
-- Actual package weight
-- Volumetric weight
-- Chargeable weight
-- Order type (`B2B` / `B2C`)
-- Payment type (`COD` / `PREPAID`)
 
-### Automatic Agent Assignment
+## DB Schema 
+Attached in docs folder
 
-When an order is created:
 
-1. The pickup area's zone is identified.
-2. Available agents belonging to that zone are considered.
-3. Agents without location information are ignored.
-4. The nearest available agent is selected using geographic distance.
-5. The order is automatically assigned to that agent.
-6. The order status changes from `CREATED` to `ASSIGNED`.
 
-### Order History
 
-Customers can view all their orders along with:
-
-- Order ID
-- Current order status
-- Complete status history
-- Timestamp of each status update
-
-Status history is displayed from the latest update to the oldest update.
-
----
-
-# Tech Stack
-
-## Frontend
-
-- React
-- TypeScript
-- Vite
-- CSS
-
-## Backend
-
-- Node.js
-- Express
-- TypeScript
-- JWT
-- bcrypt
-- CORS
-
-## Database
-
-- PostgreSQL
-- Prisma ORM
-
-## Deployment
-
-- Frontend: Render - Static hosting
-- Backend: Render - Web Service
-- PostgreSQL database - Neon 
-
----
-
-# Project Structure
-
-```text
-last_mile_delivery/
-│
-├── backend/
-│   ├── prisma/
-│   │   └── schema.prisma
-│   │
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── lib/
-│   │   ├── middleware/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── tests/
-│   │   ├── utils/
-│   │   ├── app.ts
-│   │   └── server.ts
-│   │
-│   ├── .env.example
-│   ├── package.json
-│   ├── prisma.config.ts
-│   └── tsconfig.json
-│
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── docs/
-│   ├── database-design.dbml
-│   ├── database-design.png
-│   └── sequence_flow.png
-│
-├── system_design.txt
-└── README.md
