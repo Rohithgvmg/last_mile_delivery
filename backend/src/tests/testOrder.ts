@@ -12,10 +12,10 @@ async function test() {
       pickupAreaId: 1,
       dropAreaId: 2,
 
-      length: 50,
-      breadth: 40,
-      height: 30,
-      actualWeight: 4,
+      length: 5,
+      breadth: 2,
+      height: 3,
+      actualWeight: 20,
 
       orderType: OrderType.B2C,
       paymentType: PaymentType.COD,

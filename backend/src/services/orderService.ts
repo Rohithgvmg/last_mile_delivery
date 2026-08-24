@@ -6,6 +6,7 @@ import {
 } from "../generated/prisma/client";
 
 import { calculatePrice } from "./pricingService";
+import { assignOrder } from "./assignmentService";
 
 interface CreateOrderInput {
   userId: number;
@@ -37,8 +38,8 @@ export async function createOrder(input: CreateOrderInput) {
     paymentType: input.paymentType,
   });
 
-  // 2. Create Order + initial status history atomically
-  const order = await prisma.$transaction(async (tx) => {
+  // 2. Create Order + initial status history  + auto assigns agent + status history atomically
+  const result = await prisma.$transaction(async (tx) => {
     const newOrder = await tx.order.create({
       data: {
         userId: input.userId,
@@ -65,7 +66,7 @@ export async function createOrder(input: CreateOrderInput) {
         status: DeliveryStatus.CREATED,
       },
     });
-
+    //initial history as order created 
     await tx.orderStatusHistory.create({
       data: {
         orderId: newOrder.id,
@@ -74,8 +75,18 @@ export async function createOrder(input: CreateOrderInput) {
       },
     });
 
-    return newOrder;
+     // Automatically try to assign an available agent
+    const assignment = await assignOrder(tx, {
+        orderId: newOrder.id,
+        pickupAreaId: input.pickupAreaId,
+    });
+
+    return {
+        order: assignment?.order ?? newOrder,
+        assignment,
+    };
+    
   });
 
-  return order;
+  return result;
 }
