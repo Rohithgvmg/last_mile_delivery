@@ -90,3 +90,37 @@ export async function createOrder(input: CreateOrderInput) {
 
   return result;
 }
+
+export async function getOrderHistory(userId: number) {
+  const orders = await prisma.order.findMany({
+    where: {
+      userId,
+    },
+
+    select: {
+      id: true,
+      status: true,
+
+      statusHistory: {
+        orderBy: {
+          timestamp: "desc",
+        },
+
+        select: {
+          status: true,
+          timestamp: true,
+        },
+      },
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return orders.map((order) => ({
+    orderId: order.id,
+    currentStatus: order.status,
+    statusHistory: order.statusHistory,
+  }));
+}

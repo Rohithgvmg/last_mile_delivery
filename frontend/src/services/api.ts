@@ -1,5 +1,17 @@
 const API_BASE_URL = "http://localhost:5000/api";
 
+export interface StatusHistoryEntry {
+  status: string;
+  timestamp: string;
+}
+
+export interface OrderHistory {
+  orderId: number;
+  currentStatus: string;
+  statusHistory: StatusHistoryEntry[];
+} 
+
+
 export interface PricePreviewInput {
   pickupAreaId: number;
   dropAreaId: number;
@@ -100,4 +112,29 @@ export async function previewPrice(
   }
 
   return data.pricing;
+}
+
+export async function getOrderHistory(): Promise<OrderHistory[]> {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/orders/history`,
+    {
+      method: "GET",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to fetch order history"
+    );
+  }
+
+  return data;
 }

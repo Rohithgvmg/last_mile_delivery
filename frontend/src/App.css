@@ -722,3 +722,248 @@ h3 {
   cursor: not-allowed;
   transform: none;
 }
+
+/* =========================
+   Order History
+========================= */
+
+.history-button {
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.history-button:hover {
+  background: #dbeafe;
+}
+
+.history-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 32px;
+}
+
+.history-header h1 {
+  margin-bottom: 8px;
+}
+
+.history-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.history-new-order-button {
+  border: none;
+  padding: 12px 18px;
+
+  border-radius: 9px;
+
+  background: #2563eb;
+  color: white;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.history-new-order-button:hover {
+  background: #1d4ed8;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history-order-card {
+  background: white;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  padding: 26px;
+
+  box-shadow:
+    0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.history-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.history-order-label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.history-order-header h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.status-badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-delivered {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-failed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-in_transit,
+.status-out_for_delivery {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.history-section {
+  padding-top: 22px;
+}
+
+.history-section h3 {
+  margin: 0 0 18px;
+  font-size: 16px;
+}
+
+.status-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  position: relative;
+
+  display: flex;
+  gap: 14px;
+
+  min-height: 62px;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: "";
+
+  position: absolute;
+
+  left: 5px;
+  top: 12px;
+  bottom: 0;
+
+  width: 2px;
+
+  background: #e2e8f0;
+}
+
+.timeline-dot {
+  position: relative;
+  z-index: 1;
+
+  width: 12px;
+  height: 12px;
+
+  margin-top: 4px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.timeline-content strong {
+  color: #172033;
+  font-size: 14px;
+}
+
+.timeline-content span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.empty-history-card {
+  padding: 50px 30px;
+
+  text-align: center;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.empty-history-card h2 {
+  margin-bottom: 8px;
+}
+
+.empty-history-card p {
+  margin-bottom: 24px;
+  color: #64748b;
+}
+
+@media (max-width: 800px) {
+
+  .history-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .history-order-header {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .nav-user {
+    gap: 8px;
+  }
+
+  .user-info {
+    display: none;
+  }
+}

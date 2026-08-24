@@ -5,9 +5,10 @@ import { useAuth } from "./context/AuthContext";
 import OrderForm from "./components/OrderForm";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-
+import OrderHistoryPage from "./pages/OrderHistoryPage";
 export default function App() {
   const { user, logout } = useAuth();
+  const [showHistory, setShowHistory] = useState(false);
 
   const [showRegister, setShowRegister] = useState(false);
 
@@ -29,44 +30,63 @@ export default function App() {
   }
 
   // Logged in
-  return (
-    <div className="app">
+   return (
+  <div className="app">
 
-      <nav className="navbar">
+    <nav className="navbar">
 
-        <div className="logo">
-          Last Mile Delivery
-        </div>
+      <div className="logo">
+        Last Mile Delivery
+      </div>
 
-        <div className="nav-user">
+      <div className="nav-user">
 
-          <div className="user-info">
+        <div className="user-info">
 
-            <div className="user-name">
-              Welcome, {user.name}
-            </div>
-
-            <div className="user-role">
-              Role: {user.role}
-            </div>
-
+          <div className="user-name">
+            Welcome, {user.name}
           </div>
 
-          <button
-            className="logout-button"
-            onClick={logout}
-          >
-            Logout
-          </button>
+          <div className="user-role">
+            Role: {user.role}
+          </div>
 
         </div>
 
-      </nav>
-   
-      <main>
-        <OrderForm />
-      </main>
+        <button
+          className="history-button"
+          onClick={() =>
+            setShowHistory((previous) => !previous)
+          }
+        >
+          {showHistory
+            ? "New Order"
+            : "Order History"}
+        </button>
 
-    </div>
-  );
+        <button
+          className="logout-button"
+          onClick={logout}
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </nav>
+
+    <main>
+
+      {showHistory ? (
+        <OrderHistoryPage
+          onNewOrder={() => setShowHistory(false)}
+        />
+      ) : (
+        <OrderForm />
+      )}
+
+    </main>
+
+  </div>
+);
 }
